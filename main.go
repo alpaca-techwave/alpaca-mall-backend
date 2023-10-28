@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/alpaca-techwave/alpaca-mall-backend/config"
-	_ "github.com/alpaca-techwave/alpaca-mall-backend/docs" 
-	"github.com/alpaca-techwave/alpaca-mall-backend/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/swaggo/fiber-swagger"
+
+	"github.com/alpaca-techwave/alpaca-mall-backend/config"
+	_ "github.com/alpaca-techwave/alpaca-mall-backend/docs"
+	"github.com/alpaca-techwave/alpaca-mall-backend/routes"
 )
 
 // @title Alpaca Mall
@@ -34,20 +35,19 @@ func main() {
 
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
-  api := app.Group("/api", cors.New(cors.Config{
+	api := app.Group("/api", cors.New(cors.Config{
 		AllowOrigins: "*",
-    AllowHeaders: "Origin, Content-Type, Accept",
+		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-  config.Connect()
+	config.Connect()
 
-  routes.AuthRoutes(api)
-  routes.UserRoutes(api)
-  routes.AddressRoutes(api)
-
+	routes.AuthRoutes(api)
+	routes.UserRoutes(api)
+	routes.AddressRoutes(api)
 
 	err := app.Listen(":1323")
 	if err != nil {
-		log.Fatalf("fiber.Listen failed %s",err)
+		log.Fatalf("fiber.Listen failed %s", err)
 	}
 }

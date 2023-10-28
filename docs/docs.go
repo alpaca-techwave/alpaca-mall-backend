@@ -26,6 +26,11 @@ const docTemplate = `{
     "paths": {
         "/address/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create address",
                 "consumes": [
                     "application/json"
@@ -39,13 +44,46 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Address object",
-                        "name": "user",
+                        "name": "address",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Address"
+                            "$ref": "#/definitions/models.CreateAddressRequest"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/address/default": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get default address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
                 ],
                 "responses": {
                     "200": {
@@ -151,7 +189,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.CreateUserRequest"
                         }
                     }
                 ],
@@ -194,6 +232,88 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/user/reset-password": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Reset password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "Reset Password object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ResetPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/user/update-info": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "Update info object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -253,6 +373,72 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Cart": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CreateAddressRequest": {
+            "type": "object",
+            "properties": {
+                "is_default": {
+                    "type": "boolean"
+                },
+                "main_address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sub_address": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "f_name": {
+                    "type": "string"
+                },
+                "l_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "string"
+                }
+            }
+        },
         "models.LoginRequest": {
             "type": "object",
             "properties": {
@@ -272,6 +458,92 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ResetPasswordRequest": {
+            "type": "object",
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Review": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Tracking": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payment": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateInfoRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "f_name": {
+                    "type": "string"
+                },
+                "l_name": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -279,6 +551,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Address"
+                    }
+                },
+                "carts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Cart"
                     }
                 },
                 "createdAt": {
@@ -302,8 +580,20 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "reviews": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Review"
+                    }
+                },
                 "tel": {
                     "type": "string"
+                },
+                "trackings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Tracking"
+                    }
                 },
                 "updatedAt": {
                     "type": "string"

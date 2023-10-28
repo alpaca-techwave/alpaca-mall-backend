@@ -6,8 +6,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserRoutes(router fiber.Router){
-  jwt := middlewares.NewAuthMiddleware()
-  router.Post("/user/create",controllers.CreateUser)
-  router.Get("/user/info",jwt,controllers.GetUserInfo)
+func UserRoutes(router fiber.Router) {
+	jwt := middlewares.NewAuthMiddleware()
+	router.Post("/user/create", controllers.CreateUser)
+	router.Get("/user/info", jwt, controllers.GetUserInfo)
+	router.Put("/user/reset-password", jwt, controllers.UpdatePassword)
+	router.Put("/user/update-info", jwt, controllers.UpdateUserInfo)
 }

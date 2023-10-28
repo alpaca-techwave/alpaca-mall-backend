@@ -12,20 +12,29 @@ import (
 var Database *gorm.DB
 
 func Connect() error {
-  godotenv.Load()
+	godotenv.Load()
 
-  var err error
+	var err error
 
-  Database, err = gorm.Open(mysql.Open(os.Getenv("DATABASE_URI")), &gorm.Config{
-    SkipDefaultTransaction: true,
-    PrepareStmt:            true,
-  })
+	Database, err = gorm.Open(mysql.Open(os.Getenv("DATABASE_URI")), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
 
-  if err != nil {
-    panic(err)
-  }
+	if err != nil {
+		panic(err)
+	}
 
-  Database.AutoMigrate(&models.User{},&models.Address{})
+	Database.AutoMigrate(
+		&models.User{},
+		&models.Address{},
+		&models.Product{},
+		&models.Cart{},
+		&models.Review{},
+		&models.Sku{},
+		&models.Tracking{},
+		&models.Variant{},
+	)
 
-  return nil
+	return nil
 }

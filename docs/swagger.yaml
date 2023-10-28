@@ -31,6 +31,49 @@ definitions:
       user_id:
         type: string
     type: object
+  models.Cart:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      product_id:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.CreateAddressRequest:
+    properties:
+      is_default:
+        type: boolean
+      main_address:
+        type: string
+      name:
+        type: string
+      sub_address:
+        type: string
+      tel:
+        type: string
+    type: object
+  models.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      f_name:
+        type: string
+      l_name:
+        type: string
+      password:
+        type: string
+      tel:
+        type: string
+    type: object
   models.LoginRequest:
     properties:
       email:
@@ -43,11 +86,71 @@ definitions:
       token:
         type: string
     type: object
+  models.ResetPasswordRequest:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    type: object
+  models.Review:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: string
+      product_id:
+        type: string
+      score:
+        type: integer
+      updatedAt:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.Tracking:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      payment:
+        type: string
+      product_id:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.UpdateInfoRequest:
+    properties:
+      email:
+        type: string
+      f_name:
+        type: string
+      l_name:
+        type: string
+      tel:
+        type: string
+    type: object
   models.User:
     properties:
       address:
         items:
           $ref: '#/definitions/models.Address'
+        type: array
+      carts:
+        items:
+          $ref: '#/definitions/models.Cart'
         type: array
       createdAt:
         type: string
@@ -63,8 +166,16 @@ definitions:
         type: string
       password:
         type: string
+      reviews:
+        items:
+          $ref: '#/definitions/models.Review'
+        type: array
       tel:
         type: string
+      trackings:
+        items:
+          $ref: '#/definitions/models.Tracking'
+        type: array
       updatedAt:
         type: string
     type: object
@@ -90,10 +201,10 @@ paths:
       parameters:
       - description: Address object
         in: body
-        name: user
+        name: address
         required: true
         schema:
-          $ref: '#/definitions/models.Address'
+          $ref: '#/definitions/models.CreateAddressRequest'
       produces:
       - application/json
       responses:
@@ -105,6 +216,28 @@ paths:
           description: Internal Server Error
         "503":
           description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Address
+  /address/default:
+    get:
+      consumes:
+      - application/json
+      description: Get default address
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
       tags:
       - Address
   /auth/login:
@@ -161,7 +294,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.CreateUserRequest'
       produces:
       - application/json
       responses:
@@ -187,6 +320,56 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/reset-password:
+    put:
+      consumes:
+      - application/json
+      description: Reset password
+      parameters:
+      - description: Reset Password object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/update-info:
+    put:
+      consumes:
+      - application/json
+      description: Update user info
+      parameters:
+      - description: Update info object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
         "500":
           description: Internal Server Error
         "503":
