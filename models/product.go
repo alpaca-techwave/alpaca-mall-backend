@@ -12,7 +12,7 @@ type Product struct {
 	Price       float32    `                                json:"price"`
 	Description string     `                                json:"description"`
 	Image       string     `                                json:"img"`
-	Carts       []Cart     `gorm:"foreignKey:ProductID"`
+	CartItems   []CartItem `gorm:"foreignKey:ProductID"`
 	Variants    []Variant  `gorm:"foreignKey:ProductID"`
 	Trackings   []Tracking `gorm:"foreignKey:ProductID"`
 	Reviews     []Review   `gorm:"foreignKey:ProductID"`

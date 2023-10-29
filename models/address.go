@@ -16,7 +16,7 @@ type Address struct {
 	IsDefault   bool      `                                json:"is_default"`
 }
 
-type CreateAddressRequest struct {
+type AddressRequest struct {
 	Name        string `json:"name"`
 	Tel         string `json:"tel"`
 	MainAddress string `json:"main_address"`

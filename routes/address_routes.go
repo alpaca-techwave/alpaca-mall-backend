@@ -11,4 +11,6 @@ func AddressRoutes(router fiber.Router) {
 	jwt := middlewares.NewAuthMiddleware()
 	router.Post("/address/create", jwt, controllers.CreateAddress)
 	router.Get("/address/default", jwt, controllers.GetDefaultAddress)
+	router.Put("/address/update/:id", jwt, controllers.UpdateAddress)
+	router.Delete("/address/remove/:id", jwt, controllers.RemoveAddress)
 }

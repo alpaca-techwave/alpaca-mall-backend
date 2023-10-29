@@ -4,11 +4,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/alpaca-techwave/alpaca-mall-backend/models"
-	"github.com/alpaca-techwave/alpaca-mall-backend/repository"
 	"github.com/gofiber/fiber/v2"
 	jtoken "github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
+
+	"github.com/alpaca-techwave/alpaca-mall-backend/models"
+	"github.com/alpaca-techwave/alpaca-mall-backend/repository"
 )
 
 // @Description Login
@@ -29,7 +30,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	user, err := repository.FindByCredentials(loginRequest.Email, loginRequest.Password)
+	user, err := repository.FindByUserCredentials(loginRequest.Email, loginRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": err.Error(),
@@ -55,19 +56,46 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
-// @Description Test jwt auth
+// @Description Login admin
 // @Tags       Auth
 // @Accept     json
 // @Produce    json
-// @Success    200
+// @Param user body models.LoginRequest true "Token"
+// @Success    200  {object}  models.LoginResponse
 // @Failure    500
 // @Failure    503
-// @Router     /auth/test [get]
-// @Security   BearerAuth
-func Protected(c *fiber.Ctx) error {
-	user := c.Locals("user").(*jtoken.Token)
-	claims := user.Claims.(jtoken.MapClaims)
-	email := claims["email"].(string)
-	ID := claims["ID"].(string)
-	return c.SendString("Welcome 👋" + email + " " + ID)
+// @Router     /auth/admin-login [post]
+func LoginAdmin(c *fiber.Ctx) error {
+	godotenv.Load()
+	loginRequest := new(models.LoginRequest)
+	if err := c.BodyParser(loginRequest); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	admin, err := repository.FindByAdminCredentials(loginRequest.Email, loginRequest.Password)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	day := time.Hour * 24
+	claims := jtoken.MapClaims{
+		"ID":    admin.ID,
+		"email": admin.Email,
+		"exp":   time.Now().Add(day * 1).Unix(),
+	}
+	token := jtoken.NewWithClaims(jtoken.SigningMethodHS256, claims)
+
+	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.JSON(models.LoginResponse{
+		Token: t,
+	})
 }

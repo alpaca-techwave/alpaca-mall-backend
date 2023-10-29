@@ -3,10 +3,11 @@ package config
 import (
 	"os"
 
-	"github.com/alpaca-techwave/alpaca-mall-backend/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	"github.com/alpaca-techwave/alpaca-mall-backend/models"
 )
 
 var Database *gorm.DB
@@ -27,6 +28,7 @@ func Connect() error {
 
 	Database.AutoMigrate(
 		&models.User{},
+		&models.Admin{},
 		&models.Address{},
 		&models.Product{},
 		&models.Cart{},

@@ -54,15 +54,15 @@ func CreateUser(c *fiber.Ctx) error {
 func GetUserInfo(c *fiber.Ctx) error {
 	userToken := c.Locals("user").(*jtoken.Token)
 	claims := userToken.Claims.(jtoken.MapClaims)
-	id := claims["ID"].(string)
-	idStr, err := uuid.Parse(id)
+	idStr := claims["ID"].(string)
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "Invalid ID",
 		})
 	}
 	var user models.User
-	result := config.Database.Preload("Address").Find(&user, idStr)
+	result := config.Database.Preload("Address").Find(&user, id)
 	if result.RowsAffected == 0 {
 		return c.Status(404).JSON(fiber.Map{
 			"message": "Not found User",
@@ -88,11 +88,10 @@ func UpdatePassword(c *fiber.Ctx) error {
 			"message": "Invalid Body",
 		})
 	}
-
 	userToken := c.Locals("user").(*jtoken.Token)
 	claims := userToken.Claims.(jtoken.MapClaims)
-	id := claims["ID"].(string)
-	idStr, err := uuid.Parse(id)
+	idStr := claims["ID"].(string)
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "Invalid ID",
@@ -100,7 +99,7 @@ func UpdatePassword(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	result := config.Database.Find(&user, idStr)
+	result := config.Database.Find(&user, id)
 	if result.RowsAffected == 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "Not found User",
@@ -153,8 +152,8 @@ func UpdateUserInfo(c *fiber.Ctx) error {
 
 	userToken := c.Locals("user").(*jtoken.Token)
 	claims := userToken.Claims.(jtoken.MapClaims)
-	id := claims["ID"].(string)
-	idStr, err := uuid.Parse(id)
+	idStr := claims["ID"].(string)
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "Invalid ID",
@@ -162,7 +161,7 @@ func UpdateUserInfo(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	result := config.Database.Find(&user, idStr)
+	result := config.Database.Find(&user, id)
 	if result.RowsAffected == 0 {
 		return c.Status(404).JSON(fiber.Map{
 			"message": "Not found User",

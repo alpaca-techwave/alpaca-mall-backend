@@ -31,24 +31,7 @@ definitions:
       user_id:
         type: string
     type: object
-  models.Cart:
-    properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: string
-      product_id:
-        type: string
-      updatedAt:
-        type: string
-      user_id:
-        type: string
-      value:
-        type: integer
-    type: object
-  models.CreateAddressRequest:
+  models.AddressRequest:
     properties:
       is_default:
         type: boolean
@@ -59,6 +42,68 @@ definitions:
       sub_address:
         type: string
       tel:
+        type: string
+    type: object
+  models.Admin:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Cart:
+    properties:
+      cartItems:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.CartItem:
+    properties:
+      cart_id:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sku_name:
+        type: string
+      updatedAt:
+        type: string
+      variant_name:
+        type: string
+    type: object
+  models.CreateAdminRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      secret_key:
         type: string
     type: object
   models.CreateUserRequest:
@@ -86,6 +131,41 @@ definitions:
       token:
         type: string
     type: object
+  models.Product:
+    properties:
+      cartItems:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      reviews:
+        items:
+          $ref: '#/definitions/models.Review'
+        type: array
+      trackings:
+        items:
+          $ref: '#/definitions/models.Tracking'
+        type: array
+      updatedAt:
+        type: string
+      variants:
+        items:
+          $ref: '#/definitions/models.Variant'
+        type: array
+    type: object
   models.ResetPasswordRequest:
     properties:
       current_password:
@@ -110,6 +190,23 @@ definitions:
       updatedAt:
         type: string
       user_id:
+        type: string
+    type: object
+  models.Sku:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      name:
+        type: string
+      quantity:
+        type: integer
+      updatedAt:
+        type: string
+      variant_id:
         type: string
     type: object
   models.Tracking:
@@ -179,6 +276,27 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.Variant:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      name:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      skus:
+        items:
+          $ref: '#/definitions/models.Sku'
+        type: array
+      updatedAt:
+        type: string
+    type: object
 host: localhost:1323/api
 info:
   contact:
@@ -204,7 +322,7 @@ paths:
         name: address
         required: true
         schema:
-          $ref: '#/definitions/models.CreateAddressRequest'
+          $ref: '#/definitions/models.AddressRequest'
       produces:
       - application/json
       responses:
@@ -240,6 +358,112 @@ paths:
       - BearerAuth: []
       tags:
       - Address
+  /address/remove/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove address
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Address
+  /address/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Create address
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Address object
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Address'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Address
+  /admin/create:
+    post:
+      consumes:
+      - application/json
+      description: Create admin
+      parameters:
+      - description: Admin object
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Admin'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      tags:
+      - Admin
+  /auth/admin-login:
+    post:
+      consumes:
+      - application/json
+      description: Login admin
+      parameters:
+      - description: Token
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      tags:
+      - Auth
   /auth/login:
     post:
       consumes:
@@ -265,16 +489,25 @@ paths:
           description: Service Unavailable
       tags:
       - Auth
-  /auth/test:
-    get:
+  /product/create:
+    post:
       consumes:
       - application/json
-      description: Test jwt auth
+      description: Create user
+      parameters:
+      - description: Product object
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
         "500":
           description: Internal Server Error
         "503":
@@ -282,7 +515,53 @@ paths:
       security:
       - BearerAuth: []
       tags:
-      - Auth
+      - Product
+  /product/find:
+    get:
+      consumes:
+      - application/json
+      description: Get Product by Search
+      parameters:
+      - description: Search term
+        in: query
+        name: search
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      tags:
+      - Product
+  /product/index:
+    get:
+      consumes:
+      - application/json
+      description: Get All Product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      tags:
+      - Product
   /user/create:
     post:
       consumes:
