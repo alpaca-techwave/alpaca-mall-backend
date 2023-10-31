@@ -38,6 +38,8 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 	user.Password = string(bytes)
+	user.Cart.ID = uuid.New()
+	user.Cart.UserID = user.ID
 	config.Database.Create(&user)
 	return c.Status(200).JSON(user)
 }

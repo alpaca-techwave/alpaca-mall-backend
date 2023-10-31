@@ -47,6 +47,7 @@ func main() {
 	routes.AddressRoutes(api)
 	routes.AdminRoutes(api)
 	routes.ProductRoutes(api)
+	routes.CartRoutes(api)
 
 	err := app.Listen(":1323")
 	if err != nil {

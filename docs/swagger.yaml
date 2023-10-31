@@ -71,6 +71,8 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: string
+      quantity:
+        type: integer
       updatedAt:
         type: string
       user_id:
@@ -104,6 +106,17 @@ definitions:
       password:
         type: string
       secret_key:
+        type: string
+    type: object
+  models.CreateCartItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sku_name:
+        type: string
+      variant_name:
         type: string
     type: object
   models.CreateUserRequest:
@@ -245,10 +258,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Address'
         type: array
-      carts:
-        items:
-          $ref: '#/definitions/models.Cart'
-        type: array
+      cart:
+        $ref: '#/definitions/models.Cart'
       createdAt:
         type: string
       deletedAt:
@@ -489,6 +500,55 @@ paths:
           description: Service Unavailable
       tags:
       - Auth
+  /cart:
+    get:
+      consumes:
+      - application/json
+      description: Get user Cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Cart'
+            type: array
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Cart
+  /cart/add:
+    post:
+      consumes:
+      - application/json
+      description: Add Cart Item
+      parameters:
+      - description: Cart Item object
+        in: body
+        name: cartItem
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CartItem'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Cart
   /product/create:
     post:
       consumes:

@@ -14,3 +14,10 @@ type CartItem struct {
 	SkuName     string    `                                json:"sku_name"`
 	Quantity    uint8     `                                json:"quantity"`
 }
+
+type CreateCartItemRequest struct {
+	ProductID   uuid.UUID `json:"product_id"`
+	VariantName string    `json:"variant_name"`
+	SkuName     string    `json:"sku_name"`
+	Quantity    uint8     `json:"quantity"`
+}

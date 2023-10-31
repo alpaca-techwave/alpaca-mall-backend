@@ -14,7 +14,7 @@ type User struct {
 	LastName  string     `                                json:"l_name"`
 	Tel       string     `                                json:"tel"`
 	Address   []Address  `gorm:"foreignKey:UserID"`
-	Carts     []Cart     `gorm:"foreignKey:UserID"`
+	Cart      Cart       `gorm:"foreignKey:UserID"`
 	Trackings []Tracking `gorm:"foreignKey:UserID"`
 	Reviews   []Review   `gorm:"foreignKey:UserID"`
 }

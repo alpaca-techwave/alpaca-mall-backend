@@ -10,4 +10,5 @@ type Cart struct {
 	ID        uuid.UUID  `gorm:"type:char(36);primaryKey" json:"id"`
 	UserID    uuid.UUID  `                                json:"user_id"`
 	CartItems []CartItem `gorm:"foreignKey:CartID"`
+	Quantity  uint8      `                                json:"quantity"`
 }

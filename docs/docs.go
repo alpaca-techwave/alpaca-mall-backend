@@ -308,6 +308,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/cart": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get user Cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Cart"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/cart/add": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add Cart Item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "parameters": [
+                    {
+                        "description": "Cart Item object",
+                        "name": "cartItem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCartItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CartItem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
         "/product/create": {
             "post": {
                 "security": [
@@ -687,6 +767,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "quantity": {
+                    "type": "integer"
+                },
                 "updatedAt": {
                     "type": "string"
                 },
@@ -737,6 +820,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "secret_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateCartItemRequest": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "sku_name": {
+                    "type": "string"
+                },
+                "variant_name": {
                     "type": "string"
                 }
             }
@@ -954,11 +1054,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Address"
                     }
                 },
-                "carts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Cart"
-                    }
+                "cart": {
+                    "$ref": "#/definitions/models.Cart"
                 },
                 "createdAt": {
                     "type": "string"

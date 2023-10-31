@@ -36,6 +36,7 @@ func Connect() error {
 		&models.Sku{},
 		&models.Tracking{},
 		&models.Variant{},
+		&models.CartItem{},
 	)
 
 	return nil
