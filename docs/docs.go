@@ -388,6 +388,96 @@ const docTemplate = `{
                 }
             }
         },
+        "/cart/remove/{cartItemId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove Cart Item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart item id",
+                        "name": "cartItemId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/cart/set/{cartItemId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Set Cart Item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart item id",
+                        "name": "cartitemid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "cart item object",
+                        "name": "cartitem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateCartItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CartItem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
         "/product/create": {
             "post": {
                 "security": [
@@ -412,7 +502,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/models.CreateProductRequest"
                         }
                     }
                 ],
@@ -793,19 +883,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "product_id": {
-                    "type": "string"
-                },
                 "quantity": {
                     "type": "integer"
                 },
-                "sku_name": {
+                "sku_id": {
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "variant_name": {
                     "type": "string"
                 }
             }
@@ -827,17 +911,47 @@ const docTemplate = `{
         "models.CreateCartItemRequest": {
             "type": "object",
             "properties": {
-                "product_id": {
-                    "type": "string"
-                },
                 "quantity": {
                     "type": "integer"
                 },
-                "sku_name": {
+                "sku_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateProductRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
                     "type": "string"
                 },
-                "variant_name": {
+                "img": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "productOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "skus": {
+                                "type": "object",
+                                "properties": {
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "quantity": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -883,12 +997,6 @@ const docTemplate = `{
         "models.Product": {
             "type": "object",
             "properties": {
-                "cartItems": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CartItem"
-                    }
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -907,13 +1015,22 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "price": {
-                    "type": "number"
+                "productOptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProductOption"
+                    }
                 },
                 "reviews": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Review"
+                    }
+                },
+                "skus": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Sku"
                     }
                 },
                 "trackings": {
@@ -924,12 +1041,32 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ProductOption": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
                 },
-                "variants": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Variant"
-                    }
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "sku": {
+                    "$ref": "#/definitions/models.Sku"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -976,6 +1113,12 @@ const docTemplate = `{
         "models.Sku": {
             "type": "object",
             "properties": {
+                "cartItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartItem"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -985,16 +1128,19 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "name": {
+                "price": {
+                    "type": "number"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "product_option_id": {
                     "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "variant_id": {
                     "type": "string"
                 }
             }
@@ -1025,6 +1171,14 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateCartItemRequest": {
+            "type": "object",
+            "properties": {
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
@@ -1091,38 +1245,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Tracking"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Variant": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "skus": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Sku"
                     }
                 },
                 "updatedAt": {

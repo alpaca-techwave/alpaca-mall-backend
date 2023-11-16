@@ -11,4 +11,6 @@ func CartRoutes(router fiber.Router) {
 	jwt := middlewares.NewAuthMiddleware()
 	router.Get("/cart", jwt, controllers.GetMyCart)
 	router.Post("/cart/add", jwt, controllers.AddCartItem)
+	router.Put("/cart/set/:cartItemId", jwt, controllers.SetCartItem)
+	router.Delete("/cart/remove/:cartItemId", jwt, controllers.RemoveCartItem)
 }

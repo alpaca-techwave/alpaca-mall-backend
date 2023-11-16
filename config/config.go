@@ -31,11 +31,11 @@ func Connect() error {
 		&models.Admin{},
 		&models.Address{},
 		&models.Product{},
+		&models.ProductOption{},
+		&models.Sku{},
 		&models.Cart{},
 		&models.Review{},
-		&models.Sku{},
 		&models.Tracking{},
-		&models.Variant{},
 		&models.CartItem{},
 	)
 

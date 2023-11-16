@@ -88,15 +88,11 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: string
-      product_id:
-        type: string
       quantity:
         type: integer
-      sku_name:
+      sku_id:
         type: string
       updatedAt:
-        type: string
-      variant_name:
         type: string
     type: object
   models.CreateAdminRequest:
@@ -110,14 +106,33 @@ definitions:
     type: object
   models.CreateCartItemRequest:
     properties:
-      product_id:
-        type: string
       quantity:
         type: integer
-      sku_name:
+      sku_id:
         type: string
-      variant_name:
+    type: object
+  models.CreateProductRequest:
+    properties:
+      description:
         type: string
+      img:
+        type: string
+      name:
+        type: string
+      productOptions:
+        items:
+          properties:
+            name:
+              type: string
+            skus:
+              properties:
+                price:
+                  type: number
+                quantity:
+                  type: integer
+              type: object
+          type: object
+        type: array
     type: object
   models.CreateUserRequest:
     properties:
@@ -146,10 +161,6 @@ definitions:
     type: object
   models.Product:
     properties:
-      cartItems:
-        items:
-          $ref: '#/definitions/models.CartItem'
-        type: array
       createdAt:
         type: string
       deletedAt:
@@ -162,11 +173,17 @@ definitions:
         type: string
       name:
         type: string
-      price:
-        type: number
+      productOptions:
+        items:
+          $ref: '#/definitions/models.ProductOption'
+        type: array
       reviews:
         items:
           $ref: '#/definitions/models.Review'
+        type: array
+      skus:
+        items:
+          $ref: '#/definitions/models.Sku'
         type: array
       trackings:
         items:
@@ -174,10 +191,23 @@ definitions:
         type: array
       updatedAt:
         type: string
-      variants:
-        items:
-          $ref: '#/definitions/models.Variant'
-        type: array
+    type: object
+  models.ProductOption:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      name:
+        type: string
+      product_id:
+        type: string
+      sku:
+        $ref: '#/definitions/models.Sku'
+      updatedAt:
+        type: string
     type: object
   models.ResetPasswordRequest:
     properties:
@@ -207,19 +237,25 @@ definitions:
     type: object
   models.Sku:
     properties:
+      cartItems:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
       createdAt:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: string
-      name:
+      price:
+        type: number
+      product_id:
+        type: string
+      product_option_id:
         type: string
       quantity:
         type: integer
       updatedAt:
-        type: string
-      variant_id:
         type: string
     type: object
   models.Tracking:
@@ -240,6 +276,11 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  models.UpdateCartItemRequest:
+    properties:
+      quantity:
+        type: integer
     type: object
   models.UpdateInfoRequest:
     properties:
@@ -283,27 +324,6 @@ definitions:
       trackings:
         items:
           $ref: '#/definitions/models.Tracking'
-        type: array
-      updatedAt:
-        type: string
-    type: object
-  models.Variant:
-    properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: string
-      name:
-        type: string
-      product_id:
-        type: string
-      quantity:
-        type: integer
-      skus:
-        items:
-          $ref: '#/definitions/models.Sku'
         type: array
       updatedAt:
         type: string
@@ -549,6 +569,62 @@ paths:
       - BearerAuth: []
       tags:
       - Cart
+  /cart/remove/{cartItemId}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Cart Item
+      parameters:
+      - description: cart item id
+        in: path
+        name: cartItemId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Cart
+  /cart/set/{cartItemId}:
+    put:
+      consumes:
+      - application/json
+      description: Set Cart Item
+      parameters:
+      - description: cart item id
+        in: path
+        name: cartitemid
+        required: true
+        type: string
+      - description: cart item object
+        in: body
+        name: cartitem
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CartItem'
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      security:
+      - BearerAuth: []
+      tags:
+      - Cart
   /product/create:
     post:
       consumes:
@@ -560,7 +636,7 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/models.Product'
+          $ref: '#/definitions/models.CreateProductRequest'
       produces:
       - application/json
       responses:

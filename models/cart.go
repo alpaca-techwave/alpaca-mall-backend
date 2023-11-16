@@ -12,3 +12,7 @@ type Cart struct {
 	CartItems []CartItem `gorm:"foreignKey:CartID"`
 	Quantity  uint8      `                                json:"quantity"`
 }
+
+type GetCartResponse struct {
+	GetCartItemResposes []GetCartItemResponse
+}

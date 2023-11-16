@@ -7,17 +7,26 @@ import (
 
 type CartItem struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"type:char(36);primaryKey" json:"id"`
-	CartID      uuid.UUID `                                json:"cart_id"`
-	ProductID   uuid.UUID `                                json:"product_id"`
-	VariantName string    `                                json:"variant_name"`
-	SkuName     string    `                                json:"sku_name"`
-	Quantity    uint8     `                                json:"quantity"`
+	ID       uuid.UUID `gorm:"type:char(36);primaryKey" json:"id"`
+	CartID   uuid.UUID `                                json:"cart_id"`
+	SkuID    uuid.UUID `                                json:"sku_id"`
+	Quantity uint32    `                                json:"quantity"`
 }
 
 type CreateCartItemRequest struct {
-	ProductID   uuid.UUID `json:"product_id"`
-	VariantName string    `json:"variant_name"`
-	SkuName     string    `json:"sku_name"`
-	Quantity    uint8     `json:"quantity"`
+	SkuID    uuid.UUID `json:"sku_id"`
+	Quantity uint32    `json:"quantity"`
+}
+
+type UpdateCartItemRequest struct {
+	Quantity uint32 `json:"quantity"`
+}
+
+type GetCartItemResponse struct {
+	CartItemID        uuid.UUID
+	Image             string
+	ProductName       string
+	ProductOptionName string
+	Price             uint32
+	Quantity          uint32
 }

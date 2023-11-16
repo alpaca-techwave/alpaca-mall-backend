@@ -13,7 +13,7 @@ import (
 // @Tags       Product
 // @Accept     json
 // @Produce    json
-// @Param product body models.Product true "Product object"
+// @Param product body models.CreateProductRequest true "Product object"
 // @Success    200 {object}  models.Product
 // @Failure    500
 // @Failure    503
@@ -38,14 +38,35 @@ func CreateProduct(c *fiber.Ctx) error {
 		})
 	}
 
-	product := new(models.Product)
-	if err := c.BodyParser(product); err != nil {
+	productBody := new(models.CreateProductRequest)
+	if err := c.BodyParser(productBody); err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Invalid Body",
 		})
 	}
-	product.ID = uuid.New()
+	product := models.Product{
+		ID:          uuid.New(),
+		Name:        productBody.Name,
+		Description: productBody.Description,
+		Image:       productBody.Image,
+	}
 	config.Database.Create(&product)
+	for _, option := range productBody.ProductOptions {
+		productOption := models.ProductOption{
+			ID:        uuid.New(),
+			ProductID: product.ID,
+			Name:      option.Name,
+		}
+		config.Database.Create(&productOption)
+		skus := models.Sku{
+			ID:              uuid.New(),
+			ProductID:       product.ID,
+			ProductOptionID: productOption.ID,
+			Price:           option.Skus.Price,
+			Quantity:        option.Skus.Quantity,
+		}
+		config.Database.Create(&skus)
+	}
 	return c.Status(200).JSON(&product)
 }
 
@@ -59,7 +80,10 @@ func CreateProduct(c *fiber.Ctx) error {
 // @Router     /product/index [get]
 func GetAllProduct(c *fiber.Ctx) error {
 	var products []models.Product
-	config.Database.Preload("Variants.Skus").Order("created_at asc").Find(&products)
+	config.Database.Preload("ProductOptions.Sku").
+		Preload("Skus").
+		Order("created_at asc").
+		Find(&products)
 	return c.JSON(&products)
 }
 
@@ -76,6 +100,9 @@ func GetBySearch(c *fiber.Ctx) error {
 	searchTerm := c.Query("search")
 	searchTerm = "%" + searchTerm + "%"
 	var products []models.Product
-	config.Database.Preload("Variants.Skus").Where("name LIKE ?", searchTerm).Find(&products)
+	config.Database.Preload("ProductOptions.Sku").
+		Preload("Skus").
+		Where("name LIKE ?", searchTerm).
+		Find(&products)
 	return c.JSON(&products)
 }
