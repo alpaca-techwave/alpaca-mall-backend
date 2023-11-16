@@ -106,3 +106,33 @@ func GetBySearch(c *fiber.Ctx) error {
 		Find(&products)
 	return c.JSON(&products)
 }
+
+// @Description Get Product By ID
+// @Tags       Product
+// @Accept     json
+// @Produce    json
+// @Param id path string true "Product ID"
+// @Success    200 {object} models.Product
+// @Failure    500
+// @Failure    503
+// @Router     /product/{id} [get]
+func GetProductByID(c *fiber.Ctx) error {
+	productIdStr := c.Params("id")
+	productId, err := uuid.Parse(productIdStr)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Invalid Product ID",
+		})
+	}
+
+	var product models.Product
+	result := config.Database.Preload("ProductOptions.Sku").
+		Preload("Skus").
+		Find(&product, productId)
+	if result.RowsAffected == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "Not Found Product",
+		})
+	}
+	return c.JSON(&product)
+}

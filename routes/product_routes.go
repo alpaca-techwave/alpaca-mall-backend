@@ -12,4 +12,5 @@ func ProductRoutes(router fiber.Router) {
 	router.Post("/product/create", jwt, controllers.CreateProduct)
 	router.Get("/product/index", controllers.GetAllProduct)
 	router.Get("/product/find", controllers.GetBySearch)
+	router.Get("/product/:id", controllers.GetProductByID)
 }
