@@ -11,10 +11,9 @@ type Product struct {
 	Name           string          `                                json:"name"`
 	Description    string          `                                json:"description"`
 	Image          string          `                                json:"img"`
-	Trackings      []Tracking      `gorm:"foreignKey:ProductID"`
 	Reviews        []Review        `gorm:"foreignKey:ProductID"`
 	ProductOptions []ProductOption `gorm:"foreignKey:ProductID"`
-	Skus           []Sku           `gorm:"foreignKey:ProductID"`
+	Skus           []Sku           `gorm:"foreignkey:ProductID"`
 }
 
 type CreateProductRequest struct {

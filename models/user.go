@@ -7,16 +7,16 @@ import (
 
 type User struct {
 	gorm.Model
-	ID        uuid.UUID  `gorm:"type:char(36);primaryKey" json:"id"`
-	Email     string     `                                json:"email"`
-	Password  string     `gorm:"type:char(60)"            json:"password"`
-	FirstName string     `                                json:"f_name"`
-	LastName  string     `                                json:"l_name"`
-	Tel       string     `                                json:"tel"`
-	Address   []Address  `gorm:"foreignKey:UserID"`
-	Cart      Cart       `gorm:"foreignKey:UserID"`
-	Trackings []Tracking `gorm:"foreignKey:UserID"`
-	Reviews   []Review   `gorm:"foreignKey:UserID"`
+	ID        uuid.UUID `gorm:"type:char(36);primaryKey" json:"id"`
+	Email     string    `                                json:"email"`
+	Password  string    `gorm:"type:char(60)"            json:"password"`
+	FirstName string    `                                json:"f_name"`
+	LastName  string    `                                json:"l_name"`
+	Tel       string    `                                json:"tel"`
+	Address   []Address `gorm:"foreignKey:UserID"`
+	Cart      Cart      `gorm:"foreignKey:UserID"`
+	Order     []Order   `gorm:"foreignKey:UserID"`
+	Reviews   []Review  `gorm:"foreignKey:UserID"`
 }
 
 type CreateUserRequest struct {
